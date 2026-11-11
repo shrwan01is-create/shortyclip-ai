@@ -7,7 +7,7 @@ app = FastAPI(title="ShortyClip AI Backend")
 def home():
     return {
         "message": "ShortyClip AI backend is running",
-        "video_processing_ready": False
+        "video_processing_ready": True
     }
 
 

@@ -61,7 +61,9 @@ def process_youtube(request: YouTubeRequest):
         if not data.get("items"):
             return {
                 "message": "Video not found",
-                "status": "failed"
+                "status": "failed",
+                "api_status": response.status_code,
+                "api_error": data
             }
 
         item = data["items"][0]

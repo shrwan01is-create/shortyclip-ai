@@ -1,72 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShortyClip AI</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="container">
+    <h1>ShortyClip AI</h1>
+    <p class="subtitle">Turn long videos into viral clips</p>
 
-  <h1>ShortyClip AI</h1>
+    <input id="youtubeUrl" type="text" placeholder="Paste YouTube link" />
+    <button id="getClipsBtn">Get Clips</button>
 
-  <p>Try Free</p>
-  <p>10 free clips daily • No credit card</p>
+    <div id="youtubeResult"></div>
 
-  <h2>Turn long videos into viral clips</h2>
-
-  <p>Paste a YouTube link or upload a video. ShortyClip AI finds the best moments and creates caption-ready short clips.</p>
-
-  <input id="youtubeUrl" type="text" placeholder="Paste YouTube video link...">
-
-  <button id="getClipsBtn">Get Clips</button>
-
-  <div id="youtubeResult"></div>
-
-  <h3>AI highlight detection</h3>
-  <h3>Auto captions</h3>
-  <h3>9:16 Reels & Shorts</h3>
-
-  <h2>How it works</h2>
-
-  <p>1. Paste a YouTube link or upload your video.</p>
-  <p>2. AI scans the video and finds engaging moments.</p>
-  <p>3. Get short clips with captions, titles and timestamps.</p>
-  <p>4. Download or share your clips.</p>
-
-  <h2>Everything you need</h2>
-
-  <h3>AI Clip Finder</h3>
-  <p>Finds hooks, stories and high-retention moments from long videos.</p>
-
-  <h3>Auto Captions</h3>
-  <p>Generates readable Hindi and English captions for every clip.</p>
-
-  <h3>Vertical Ready</h3>
-  <p>Creates 9:16 clips for YouTube Shorts, Reels and TikTok.</p>
-
-  <h3>10 Free Clips Daily</h3>
-  <p>Use ShortyClip AI free every day. No credit card required.</p>
-
-  <h2>Ready to create your first clip?</h2>
-  <p>Start free with 10 clips every day.</p>
-
-  <button>Start Free</button>
-
-  <h2>FAQ</h2>
-
-  <p>Is ShortyClip AI free?</p>
-  <p>Can I use a YouTube link?</p>
-  <p>Which languages are supported?</p>
-  <p>Can I download clips?</p>
-
-  <p>© 2026 ShortyClip AI — Turn long videos into viral clips.</p>
-
-  <button id="testBackendBtn">Test Backend</button>
-
-  <div id="backendResult"></div>
+    <button id="testBackendBtn">Test Backend</button>
+    <div id="backendResult"></div>
+  </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>

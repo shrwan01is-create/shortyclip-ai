@@ -3,4 +3,4 @@ uvicorn[standard]
 pydantic
 python-dotenv
 requests
-yt-dlp
+python-multipart

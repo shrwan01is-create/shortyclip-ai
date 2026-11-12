@@ -17,3 +17,4 @@ document.getElementById('clip-form').addEventListener('submit', function (e) {
   const data = await response.json();
   console.log(data);
 }
+document.getElementById("testBackendBtn").addEventListener("click", testBackend);

@@ -1,20 +1,16 @@
 const API_URL = "https://shortyclip-ai.onrender.com";
-document.getElementById('clip-form').addEventListener('submit', function (e) {
-  e.preventDefault();
 
-  const url = document.getElementById('video-url').value.trim();
-  const message = document.getElementById('form-message');
+async function testBackend() {
+  const resultBox = document.getElementById("backendResult");
+  resultBox.textContent = "Testing...";
 
-  if (!url) {
-    message.textContent = 'Please paste a YouTube link.';
-    return;
+  try {
+    const response = await fetch(`${API_URL}/`);
+    const data = await response.json();
+    resultBox.textContent = JSON.stringify(data);
+  } catch (error) {
+    resultBox.textContent = "Error: " + error.message;
   }
-
-  message.textContent =
-    'Demo only: AI video processing is not connected yet. Clips cannot be generated right now.';
-});async function testBackend() {
-  const response = await fetch(`${API_URL}/`);
-  const data = await response.json();
-  console.log(data);
 }
+
 document.getElementById("testBackendBtn").addEventListener("click", testBackend);

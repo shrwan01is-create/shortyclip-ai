@@ -31,7 +31,20 @@ document.getElementById("getClipsBtn").addEventListener("click", async () => {
     });
 
     const data = await response.json();
-    resultBox.textContent = JSON.stringify(data);
+
+    if (data.status === "ready") {
+      resultBox.innerHTML = `
+        <div class="video-card">
+          <img src="${data.thumbnail}" alt="Video thumbnail" class="video-thumb" />
+          <h3>${data.title}</h3>
+          <p><strong>Channel:</strong> ${data.channel}</p>
+          <p><strong>Duration:</strong> ${data.duration}</p>
+          <p><strong>Views:</strong> ${data.views}</p>
+        </div>
+      `;
+    } else {
+      resultBox.textContent = JSON.stringify(data);
+    }
   } catch (error) {
     resultBox.textContent = "Error: " + error.message;
   }

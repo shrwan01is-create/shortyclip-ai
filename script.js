@@ -49,12 +49,26 @@ async function generateClips() {
 
   try {
     const { FFmpeg } = FFmpegWASM;
-    const { fetchFile } = FFmpegUtil;
+    const { fetchFile, toBlobURL } = FFmpegUtil;
+
+    const coreURL = await toBlobURL(
+      "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js",
+      "text/javascript"
+    );
+    const wasmURL = await toBlobURL(
+      "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm",
+      "application/wasm"
+    );
+    const classWorkerURL = await toBlobURL(
+      "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js",
+      "text/javascript"
+    );
 
     const ffmpeg = new FFmpeg();
     await ffmpeg.load({
-      coreURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js",
-      wasmURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm"
+      coreURL,
+      wasmURL,
+      classWorkerURL
     });
 
     resultBox.textContent = "Processing video...";

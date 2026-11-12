@@ -1,3 +1,4 @@
+const API_URL = "https://shortyclip-ai.onrender.com";
 document.getElementById('clip-form').addEventListener('submit', function (e) {
   e.preventDefault();
 
@@ -11,4 +12,8 @@ document.getElementById('clip-form').addEventListener('submit', function (e) {
 
   message.textContent =
     'Demo only: AI video processing is not connected yet. Clips cannot be generated right now.';
-});
+});async function testBackend() {
+  const response = await fetch(`${API_URL}/`);
+  const data = await response.json();
+  console.log(data);
+}

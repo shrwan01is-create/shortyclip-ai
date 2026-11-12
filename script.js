@@ -13,9 +13,7 @@ async function testBackend() {
   }
 }
 
-document.getElementById("testBackendBtn").addEventListener("click", testBackend);
-
-document.getElementById("getClipsBtn").addEventListener("click", async () => {
+async function getClips() {
   const url = document.getElementById("youtubeUrl").value;
   const resultBox = document.getElementById("youtubeResult");
 
@@ -31,21 +29,40 @@ document.getElementById("getClipsBtn").addEventListener("click", async () => {
     });
 
     const data = await response.json();
-
-    if (data.status === "ready") {
-      resultBox.innerHTML = `
-        <div class="video-card">
-          <img src="${data.thumbnail}" alt="Video thumbnail" class="video-thumb" />
-          <h3>${data.title}</h3>
-          <p><strong>Channel:</strong> ${data.channel}</p>
-          <p><strong>Duration:</strong> ${data.duration}</p>
-          <p><strong>Views:</strong> ${data.views}</p>
-        </div>
-      `;
-    } else {
-      resultBox.textContent = JSON.stringify(data);
-    }
+    resultBox.textContent = JSON.stringify(data);
   } catch (error) {
     resultBox.textContent = "Error: " + error.message;
   }
-});
+}
+
+async function uploadVideo() {
+  const fileInput = document.getElementById("videoFile");
+  const resultBox = document.getElementById("uploadResult");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    resultBox.textContent = "Please select a video file first.";
+    return;
+  }
+
+  resultBox.textContent = "Uploading...";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const response = await fetch(`${API_URL}/upload-video`, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    resultBox.textContent = JSON.stringify(data);
+  } catch (error) {
+    resultBox.textContent = "Error: " + error.message;
+  }
+}
+
+document.getElementById("testBackendBtn").addEventListener("click", testBackend);
+document.getElementById("getClipsBtn").addEventListener("click", getClips);
+document.getElementById("uploadBtn").addEventListener("click", uploadVideo);

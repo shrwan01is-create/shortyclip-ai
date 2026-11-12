@@ -13,51 +13,6 @@ async function testBackend() {
   }
 }
 
-async function getClips() {
-  const url = document.getElementById("youtubeUrl").value;
-  const resultBox = document.getElementById("youtubeResult");
-
-  resultBox.textContent = "Processing...";
-
-  try {
-    const response = await fetch(`${API_URL}/process-youtube`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ url: url })
-    });
-
-    const data = await response.json();
-    const jobId = data.job_id;
-
-    if (!jobId) {
-      resultBox.textContent = JSON.stringify(data);
-      return;
-    }
-
-    const interval = setInterval(async () => {
-      const statusResponse = await fetch(`${API_URL}/status/${jobId}`);
-      const statusData = await statusResponse.json();
-
-      if (statusData.status === "done") {
-        clearInterval(interval);
-        resultBox.innerHTML = statusData.clips.map((clip, i) =>
-          `<a href="${API_URL}${clip}" download="clip${i+1}.mp4">Download Clip ${i+1}</a><br>`
-        ).join("");
-      } else if (statusData.status === "error") {
-        clearInterval(interval);
-        resultBox.textContent = "Error: " + (statusData.error || "Processing failed");
-      } else {
-        resultBox.textContent = "Processing...";
-      }
-    }, 3000);
-
-  } catch (error) {
-    resultBox.textContent = "Error: " + error.message;
-  }
-}
-
 async function generateClips() {
   const fileInput = document.getElementById("videoFile");
   const resultBox = document.getElementById("uploadResult");
@@ -108,5 +63,4 @@ async function generateClips() {
 }
 
 document.getElementById("testBackendBtn").addEventListener("click", testBackend);
-document.getElementById("getClipsBtn").addEventListener("click", getClips);
 document.getElementById("uploadBtn").addEventListener("click", generateClips);

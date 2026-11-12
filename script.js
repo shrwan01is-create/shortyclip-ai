@@ -35,7 +35,7 @@ async function getClips() {
   }
 }
 
-async function uploadVideo() {
+async function generateClips() {
   const fileInput = document.getElementById("videoFile");
   const resultBox = document.getElementById("uploadResult");
   const file = fileInput.files[0];
@@ -45,19 +45,35 @@ async function uploadVideo() {
     return;
   }
 
-  resultBox.textContent = "Uploading...";
-
-  const formData = new FormData();
-  formData.append("file", file);
+  resultBox.textContent = "Loading FFmpeg...";
 
   try {
-    const response = await fetch(`${API_URL}/upload-video`, {
-      method: "POST",
-      body: formData
+    const { FFmpeg } = FFmpegWASM;
+    const { fetchFile } = FFmpegUtil;
+
+    const ffmpeg = new FFmpeg();
+    await ffmpeg.load({
+      coreURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js",
+      wasmURL: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm"
     });
 
-    const data = await response.json();
-    resultBox.textContent = JSON.stringify(data);
+    resultBox.textContent = "Processing video...";
+
+    await ffmpeg.writeFile("input.mp4", await fetchFile(file));
+
+    const clips = [];
+    for (let i = 0; i < 3; i++) {
+      const start = i * 15;
+      await ffmpeg.exec(["-i", "input.mp4", "-ss", start.toString(), "-t", "15", `clip${i+1}.mp4`]);
+      const data = ffmpeg.readFile(`clip${i+1}.mp4`);
+      const blob = new Blob([data.buffer], { type: "video/mp4" });
+      clips.push(URL.createObjectURL(blob));
+    }
+
+    resultBox.innerHTML = clips.map((url, i) =>
+      `<a href="${url}" download="clip${i+1}.mp4">Download Clip ${i+1}</a><br>`
+    ).join("");
+
   } catch (error) {
     resultBox.textContent = "Error: " + error.message;
   }
@@ -65,4 +81,4 @@ async function uploadVideo() {
 
 document.getElementById("testBackendBtn").addEventListener("click", testBackend);
 document.getElementById("getClipsBtn").addEventListener("click", getClips);
-document.getElementById("uploadBtn").addEventListener("click", uploadVideo);
+document.getElementById("uploadBtn").addEventListener("click", generateClips);

@@ -48,38 +48,29 @@ async function generateClips() {
   resultBox.textContent = "Loading FFmpeg...";
 
   try {
-    const { FFmpeg } = FFmpegWASM;
-    const { fetchFile, toBlobURL } = FFmpegUtil;
+    const { createFFmpeg, fetchFile } = FFmpeg;
 
-    const coreURL = await toBlobURL(
-      "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js",
-      "text/javascript"
-    );
-    const wasmURL = await toBlobURL(
-      "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm",
-      "application/wasm"
-    );
-    const classWorkerURL = await toBlobURL(
-      "https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js",
-      "text/javascript"
-    );
-
-    const ffmpeg = new FFmpeg();
-    await ffmpeg.load({
-      coreURL,
-      wasmURL,
-      classWorkerURL
+    const ffmpeg = createFFmpeg({
+      log: true,
+      corePath: "https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js"
     });
+
+    await ffmpeg.load();
 
     resultBox.textContent = "Processing video...";
 
-    await ffmpeg.writeFile("input.mp4", await fetchFile(file));
+    ffmpeg.FS("writeFile", "input.mp4", await fetchFile(file));
 
     const clips = [];
     for (let i = 0; i < 3; i++) {
       const start = i * 15;
-      await ffmpeg.exec(["-i", "input.mp4", "-ss", start.toString(), "-t", "15", `clip${i+1}.mp4`]);
-      const data = ffmpeg.readFile(`clip${i+1}.mp4`);
+      await ffmpeg.run(
+        "-i", "input.mp4",
+        "-ss", start.toString(),
+        "-t", "15",
+        `clip${i+1}.mp4`
+      );
+      const data = ffmpeg.FS("readFile", `clip${i+1}.mp4`);
       const blob = new Blob([data.buffer], { type: "video/mp4" });
       clips.push(URL.createObjectURL(blob));
     }

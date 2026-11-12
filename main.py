@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import yt_dlp
+import os
+import re
+import requests
 
 app = FastAPI()
 
@@ -23,23 +25,57 @@ def read_root():
         "video_processing_ready": True
     }
 
+def get_video_id(url):
+    match = re.search(r"(?:v=|youtu\.be/)([A-Za-z0-9_-]{11})", url)
+    return match.group(1) if match else None
+
 @app.post("/process-youtube")
 def process_youtube(request: YouTubeRequest):
-    try:
-        ydl_opts = {
-            "quiet": True,
-            "no_warnings": True,
-            "skip_download": True
+    video_id = get_video_id(request.url)
+
+    if not video_id:
+        return {
+            "message": "Invalid YouTube link",
+            "status": "failed"
         }
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(request.url, download=False)
+    api_key = os.getenv("YOUTUBE_API_KEY")
+
+    if not api_key:
+        return {
+            "message": "YouTube API key missing",
+            "status": "failed"
+        }
+
+    url = (
+        f"https://www.googleapis.com/youtube/v3/videos"
+        f"?part=snippet,contentDetails,statistics"
+        f"&id={video_id}"
+        f"&key={api_key}"
+    )
+
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        if not data.get("items"):
+            return {
+                "message": "Video not found",
+                "status": "failed"
+            }
+
+        item = data["items"][0]
+        snippet = item.get("snippet", {})
+        details = item.get("contentDetails", {})
+        stats = item.get("statistics", {})
 
         return {
             "message": "Video info received",
-            "title": info.get("title"),
-            "duration": info.get("duration"),
-            "thumbnail": info.get("thumbnail"),
+            "title": snippet.get("title"),
+            "channel": snippet.get("channelTitle"),
+            "duration": details.get("duration"),
+            "views": stats.get("viewCount"),
+            "thumbnail": snippet.get("thumbnails", {}).get("high", {}).get("url"),
             "status": "ready"
         }
 
